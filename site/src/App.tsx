@@ -3,7 +3,7 @@ import './App.css'
 import { interpreter, unParse } from '@pounce-lang/core';
 
 function App() {
-  const [count, setCount] = useState(-1)
+  const [count, setCount] = useState(0)
   // const [undo, setUndo] = useState([])
   // const [circles, setCircles] = useState(null)
   // let value0: { stack: [] } = { stack: []};
@@ -23,7 +23,7 @@ function App() {
   const startPt = [30, 30]
   const columns = 27
   const rows = 17
-  const interp = interpreter(`${Math.floor(Math.random()*50)} seedrandom random drop 
+  const interp = interpreter(`${count % 50 + 11} seedrandom random drop 
   [random 12 * random .5 - 12 * [] cons cons] [rpt] compose
   [rpt rpt rpt [] cons cons cons] [rptset] compose
   [rptset rptset rptset [] cons cons cons] [squigle] compose
@@ -40,7 +40,7 @@ function App() {
   }
   return (
     <>
-      <h2>{columns*rows} paths</h2>
+      
       <svg style={{ backgroundColor: "#ddd" }} width="604" height="384" xmlns="http://www.w3.org/2000/svg">
         <g id="Layer_1" stroke="null">
           <title>Layer 1</title>
@@ -51,6 +51,9 @@ function App() {
           {allPaths.map((p, i) => <path fill="none" strokeWidth="0.7" key={`path_${i}`} id={`path_${i}`} d={makePathDString(...p)} stroke="#000" />)}
         </g>
       </svg>
+      <div>
+      <small style={{paddingRight:30}}>{columns*rows} paths --  {count+1} of 50</small>
+      
       {/* <button disabled={count <= 0} onClick={
         () => {
           if (count >= 1) {
@@ -69,9 +72,10 @@ function App() {
       }>forth</button> */}
       <button onClick={
         () => {
-          setCount(count + 1)
+          setCount((count + 1) % 50)
         }
       }>new</button>
+      </div>
     </>
   )
 }
