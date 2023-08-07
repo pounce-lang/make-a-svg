@@ -8,13 +8,14 @@ function App() {
   const columns = 27
   const rows = 17
   const interp = interpreter(`${count % 50 + 11} seedrandom random drop 
-  [random 12 * random .5 - 12 * [] cons cons] [rpt] compose
-  [rpt rpt rpt [] cons cons cons] [rptset] compose
+  [dup 0 > [1 - swap dup dip2 swap timesi] [drop drop] if-else] [timesi] compose
+  [random .5 - 10 * random .5 - 14 * [] cons cons] [rpt] compose
+  [rpt rpt rpt rpt rpt rpt [] cons cons cons cons cons cons] [rptset] compose
   [rptset rptset rptset [] cons cons cons] [squigle] compose
-  [squigle] ${columns} ${rows} * times
+  [squigle] ${columns} ${rows} * timesi
   `);
   const { value } = interp.next();
-  console.log(unParse(value.stack))
+  // console.log(unParse(value.stack))
   let allPaths = []
   for (let x = 0; x < columns; x++) {
     for (let y = 0; y < rows; y++) {
@@ -23,7 +24,8 @@ function App() {
   }
   return (
     <>
-      <svg style={{ backgroundColor: "#ddd" }} width="604" height="384" xmlns="http://www.w3.org/2000/svg">
+      <svg style={{ backgroundColor: "#ddd", strokeLinecap: "round",
+    strokeLinejoin: "round" }} width="604" height="384" xmlns="http://www.w3.org/2000/svg">
         <g id="Layer_1" stroke="null">
           <title>Layer 1</title>
           {allPaths.map((p, i) => <path fill="none" strokeWidth="0.7" key={`path_${i}`} id={`path_${i}`} d={makePathDString(...p)} stroke="#000" />)}
