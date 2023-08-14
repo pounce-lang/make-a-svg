@@ -2,19 +2,29 @@ import { useState } from 'react'
 import './App.css'
 import { interpreter, unParse } from '@pounce-lang/core';
 
+// attempt at timesi
+// [dup 0 > [1 - [f n] [n f leap f n] pounce timesi] [drop drop] if-else] [timesi] compose
+// [3 - abs  3 - abs ] 7 timesi
+
 function App() {
   const [count, setCount] = useState(0)
   const startPt = [30, 30]
   const columns = 27
   const rows = 17
   const interp = interpreter(`${count % 50 + 11} seedrandom random drop 
-  [dup 0 > [1 - swap dup dip2 swap timesi] [drop drop] if-else] [timesi] compose
-  [random .5 - 10 * random .5 - 14 * [] cons cons] [rpt] compose
-  [rpt rpt rpt rpt rpt rpt [] cons cons cons cons cons cons] [rptset] compose
-  [rptset rptset rptset [] cons cons cons] [squigle] compose
-  [squigle] ${columns} ${rows} * timesi
+  [dup 0 > [1 - [f n] [n f leap f n] pounce itimes] [drop drop] if-else] [itimes] compose
+  [${columns} ${rows} + 2 / floor] [midway] compose
+  [midway - abs -1 * midway +] [center] compose
+  [[i] [random .5 - i center * 1 midway / * random .5 - i center * 1 midway / * [] cons cons] pounce] [rpt] compose
+  [[i] [i rpt i rpt i rpt i rpt i rpt i rpt [] cons cons cons cons cons cons] pounce] [rptset] compose
+  [[i] [i rptset i rptset i rptset [] cons cons cons] pounce] [squigle] compose
+  [squigle] ${columns} ${rows} * itimes
   `);
-  const { value } = interp.next();
+  let result = interp.next();
+  while (!result.done) {
+    result = interp.next();
+  }
+  const value = result.value;
   // console.log(unParse(value.stack))
   let allPaths = []
   for (let x = 0; x < columns; x++) {
