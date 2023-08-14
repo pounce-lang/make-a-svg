@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import './App.css'
-import { interpreter, unParse } from '@pounce-lang/core';
+import { interpreter } from '@pounce-lang/core';
 
 // attempt at timesi
 // [dup 0 > [1 - [f n] [n f leap f n] pounce timesi] [drop drop] if-else] [timesi] compose
@@ -13,9 +13,9 @@ function App() {
   const rows = 17
   const interp = interpreter(`${count % 50 + 11} seedrandom random drop 
   [dup 0 > [1 - [f n] [n f leap f n] pounce itimes] [drop drop] if-else] [itimes] compose
-  [${columns} ${rows} + 2 / floor] [midway] compose
+  [${columns} ${rows} * 2 / floor] [midway] compose
   [midway - abs -1 * midway +] [center] compose
-  [[i] [random .5 - i center * 1 midway / * random .5 - i center * 1 midway / * [] cons cons] pounce] [rpt] compose
+  [[i] [random .5 - i center * 40 midway / * random .5 - i center * 40 midway / * [] cons cons] pounce] [rpt] compose
   [[i] [i rpt i rpt i rpt i rpt i rpt i rpt [] cons cons cons cons cons cons] pounce] [rptset] compose
   [[i] [i rptset i rptset i rptset [] cons cons cons] pounce] [squigle] compose
   [squigle] ${columns} ${rows} * itimes
@@ -38,7 +38,7 @@ function App() {
     strokeLinejoin: "round" }} width="604" height="384" xmlns="http://www.w3.org/2000/svg">
         <g id="Layer_1" stroke="null">
           <title>Layer 1</title>
-          {allPaths.map((p, i) => <path fill="none" strokeWidth="0.7" key={`path_${i}`} id={`path_${i}`} d={makePathDString(...p)} stroke="#000" />)}
+          {allPaths.map((p: any, i) => <path fill="none" strokeWidth="0.7" key={`path_${i}`} id={`path_${i}`} d={makePathDString(p[0], p[1])} stroke="#000" />)}
         </g>
       </svg>
       <div>
