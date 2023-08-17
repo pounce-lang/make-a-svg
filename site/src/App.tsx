@@ -10,7 +10,7 @@ function App() {
   const [count, setCount] = useState(0)
   const svgRef: RefObject<HTMLDivElement> | null = useRef(null);
 
-  const downloadSVG = useCallback(() => {
+  const downloadSVG = useCallback((count: number) => {
     const svg = svgRef?.current?.innerHTML;
     if (svg) {
       const blob = new Blob([svg], { type: "image/svg+xml" });
@@ -100,7 +100,7 @@ function App() {
         }
         >forth</button>
       </div>
-      <button onClick={downloadSVG} >dl_svg</button>
+      <button onClick={() => downloadSVG(count)} >dl_svg</button>
       {/* <a href={'data:application/octet-stream;base64,' + btoa(getSvg(svgEle))} download={`bespokeSvg${count + 1}-of-50.svg`} >download svg</a> */}
     </>
 }
