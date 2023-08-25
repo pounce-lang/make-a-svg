@@ -86,7 +86,7 @@ const makeLoopyPathDString = (start: number[], curves: number[][], i: number) =>
   const mkPtStr = (pt: number[], scale: number): string => pt.map((n) => n * scale).join(" ")
   const makePtsString = (jump: number, top: boolean) => {
     //console.log("jump", jump)
-    let pta = [[0, 0], [0, 10], [10, 10], [0, 0], [10, 0], [10, -10], [20, -10], [20, 0]]
+    let pta = [[0, 10], [15, 10], [15, 0]]
     if (top? jump >0 : jump < 0) {
       pta = pta.map(p => ([p[0], p[1]*-1]))
     }
