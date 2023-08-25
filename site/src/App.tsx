@@ -18,7 +18,7 @@ function App() {
     }
   }, []);
   
-  const startPt = [30, 30]
+  const startPt = [40, 50]
   const columns = 1
   const rows = 5
   const interp = interpreter(`
@@ -36,8 +36,8 @@ function App() {
   let allPaths = []
   for (let x = 0; x < columns; x++) {
     for (let y = 0; y < rows; y++) {
-      console.log(value.stack[x * rows + y])
-      allPaths.push([translate(startPt, [x * 20 + 10, y * 20 + 10]), value.stack[x * rows + y]])
+      // console.log(translate(startPt, [x * 20, y * 20]))
+      allPaths.push([translate(startPt, [x * 20, y * 50]), value.stack[x * rows + y]])
     }
   }
   //console.log(allPaths)
@@ -47,7 +47,7 @@ function App() {
     strokeLinejoin: "round" }} width="604" height="384" xmlns="http://www.w3.org/2000/svg">
         <g id="Layer_1" stroke="null">
           <title>Layer 1</title>
-          {allPaths.map((p: any, i) => <path fill="none" strokeWidth="0.7" key={`path_${i}`} id={`path_${i}`} d={makeLoopyPathDString(p[0], p[1])} stroke="#000" />)}
+          {allPaths.map((p: any, i) => makeLoopyPathDString(p[0], p[1], i))}
         </g>
       </svg>
       </div>
@@ -82,17 +82,20 @@ const makePathDString = (start: number[], curves: number[][][]) => {
   return `m${start.join(",")} ${allCurves.join(" ")}`
 }
 
-const makeLoopyPathDString = (start: number[], curves: number[]) => {
+const makeLoopyPathDString = (start: number[], curves: number[], i) => {
   const mkPtStr = (pt: number[], scale: number): string => pt.map((n) => n * scale).join(" ")
-  const makePtsString = (jump: number) => {
+  const makePtsString = (jump: number, top) => {
     //console.log("jump", jump)
-    const pta = [[0, 0], [0, 10], [10, 10], [0, 0], [10, 0], [10, -10], [20, -10], [20, 0]]
+    let pta = [[0, 0], [0, 10], [10, 10], [0, 0], [10, 0], [10, -10], [20, -10], [20, 0]]
+    if (top? jump >0 : jump < 0) {
+      pta = pta.map(p => ([p[0], p[1]*-1]))
+    }
     return pta.map(pt => mkPtStr(pt, jump)).join(", ")
   }
-  const allCurves = curves.map((c: number, i) => ` M${[start[0]+i*20, start[1]].join(" ")} c${makePtsString(c)}`)
+  const allCurves = curves.map((c: number, j) => (<path fill="none" strokeWidth="0.7" key={`path_${i*100+j}`} id={`path_${i*100+j}`} d={` M${start[0]+j*20} ${start[1]+i*20}, c${makePtsString(c, j%2===0)}`} stroke="#000" />))
 
   console.log(allCurves.join(" "))
-  return allCurves.join(" ")
+  return <g key={"some_"+i}>{allCurves}</g>
 }
 
 const makeLoopyPathDStringMock = (start: number[], curves: number[]) => {
