@@ -18,13 +18,19 @@ function App() {
     }
   }, []);
   
-  const startPt = [40, 50]
-  const columns = 1
-  const rows = 5
+  const startPt = [90, 75]
+  const columns = 3
+  const rows = 3
   const interp = interpreter(`
-  [3 -1 -1 1 1 -3] [3 3 -1 -1 1 -5]
-   [1 1 1 1 1 -5] [1 3 3 -1 -1 -5]
-   [1 1 3 -3 -1 -1]
+  [[0 0][]]
+  [[0 20][5 -1 -1 -1 -1 -1]]
+  [[0 -20][1 1 1 1 1 -5]]
+  [[0 0][3 -1 -1 1 1 -3]]
+  [[0 -10][3 3 -1 -1 1 -5]]
+  [[0 -10][1 3 3 -1 -1 -5]]
+  [[0 0][1 1 3 -3 -1 -1]]
+  [[0 -10][1 3 3 -1 -1 -5]]
+  [[0 0][1 1 3 -3 -1 -1]]
   `);
 
   let result = interp.next();
@@ -37,7 +43,7 @@ function App() {
   for (let x = 0; x < columns; x++) {
     for (let y = 0; y < rows; y++) {
       // console.log(translate(startPt, [x * 20, y * 20]))
-      allPaths.push([translate(startPt, [x * 20, y * 50]), value.stack[x * rows + y]])
+      allPaths.push([translate(startPt, [x * 150, y * 110]), value.stack[x * rows + y]])
     }
   }
   //console.log(allPaths)
@@ -75,16 +81,10 @@ const translate = (a: number[], offset: number[]) => {
   return [a[0] + offset[0], a[1] + offset[1]]
 }
 
-const makePathDString = (start: number[], curves: number[][][]) => {
-  const mkPtStr = (pt: number[]): string => pt.join(",")
-  const makePtsString = (pta: number[][]) => pta.map(pt => mkPtStr(pt)).join(" ")
-  const allCurves = curves.map((c: number[][]) => `c${makePtsString(c)}`)
-  return `m${start.join(",")} ${allCurves.join(" ")}`
-}
 
-const makeLoopyPathDString = (start: number[], curves: number[], i) => {
+const makeLoopyPathDString = (start: number[], curves: number[][], i: number) => {
   const mkPtStr = (pt: number[], scale: number): string => pt.map((n) => n * scale).join(" ")
-  const makePtsString = (jump: number, top) => {
+  const makePtsString = (jump: number, top: boolean) => {
     //console.log("jump", jump)
     let pta = [[0, 0], [0, 10], [10, 10], [0, 0], [10, 0], [10, -10], [20, -10], [20, 0]]
     if (top? jump >0 : jump < 0) {
@@ -92,21 +92,15 @@ const makeLoopyPathDString = (start: number[], curves: number[], i) => {
     }
     return pta.map(pt => mkPtStr(pt, jump)).join(", ")
   }
-  const allCurves = curves.map((c: number, j) => (<path fill="none" strokeWidth="0.7" key={`path_${i*100+j}`} id={`path_${i*100+j}`} d={` M${start[0]+j*20} ${start[1]+i*20}, c${makePtsString(c, j%2===0)}`} stroke="#000" />))
+  const allCurves = curves[1].map((c: number, j) => {
+    const s = translate(translate(start, curves[0]), [j * 20, 0])
+    return (
+      <path fill="none" strokeWidth="0.7" key={`path_${i * 100 + j}`} id={`path_${i * 100 + j}`}
+        d={` M${s.join(" ")} c${makePtsString(c, j % 2 === 0)}`} stroke="#000" />);
+  })
 
-  console.log(allCurves.join(" "))
+  //console.log(allCurves)
   return <g key={"some_"+i}>{allCurves}</g>
-}
-
-const makeLoopyPathDStringMock = (start: number[], curves: number[]) => {
-  const mkPtStr = (pt: number[], scale: number): string => pt.map((n) => n * scale).join(",")
-  const makePtsString = (jump: number) => {
-    //console.log("jump", jump)
-    const pta = [[0, 0], [0, 1], [1, 1], [1, 0]]
-    return pta.map(pt => mkPtStr(pt, jump)).join(" ")
-  }
-  const allCurves = curves.map((c: number) => `c${makePtsString(c)}`)
-  return `M${start.join(",")} C 70 80, 110 80, 110 60`
 }
 
 function downloadBlob(blob: Blob | MediaSource, filename: string) {
