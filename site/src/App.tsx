@@ -18,7 +18,7 @@ function App() {
     }
   }, []);
   
-  const startPt = [90, 75]
+  const startPt = [40, 50]
   const columns = 3
   const rows = 3
   const interp = interpreter(`
@@ -26,11 +26,11 @@ function App() {
   [[0 20][5 -1 -1 -1 -1 -1]]
   [[0 -20][1 1 1 1 1 -5]]
   [[0 0][3 -1 -1 1 1 -3]]
-  [[0 -10][3 3 -1 -1 1 -5]]
-  [[0 -10][1 3 3 -1 -1 -5]]
+  [[0 -20][3 3 -1 -1 1 -5]]
+  [[0 10][5 1 1 -3 -3 -1]]
   [[0 0][1 1 3 -3 -1 -1]]
-  [[0 -10][1 3 3 -1 -1 -5]]
-  [[0 0][1 1 3 -3 -1 -1]]
+  [[0 -20][1 3 3 -1 -1 -5]]
+  [[0 10][5 -1 1 1 -3 -3]]
   `);
 
   let result = interp.next();
@@ -43,7 +43,7 @@ function App() {
   for (let x = 0; x < columns; x++) {
     for (let y = 0; y < rows; y++) {
       // console.log(translate(startPt, [x * 20, y * 20]))
-      allPaths.push([translate(startPt, [x * 150, y * 110]), value.stack[x * rows + y]])
+      allPaths.push([translate(startPt, [x * 160, y * 130]), value.stack[x * rows + y]])
     }
   }
   //console.log(allPaths)
@@ -86,14 +86,14 @@ const makeLoopyPathDString = (start: number[], curves: number[][], i: number) =>
   const mkPtStr = (pt: number[], scale: number): string => pt.map((n) => n * scale).join(" ")
   const makePtsString = (jump: number, top: boolean) => {
     //console.log("jump", jump)
-    let pta = [[0, 10], [15, 10], [15, 0]]
+    let pta = [[0, 20], [30, 20], [30, 0]]
     if (top? jump >0 : jump < 0) {
       pta = pta.map(p => ([p[0], p[1]*-1]))
     }
     return pta.map(pt => mkPtStr(pt, jump)).join(", ")
   }
   const allCurves = curves[1].map((c: number, j) => {
-    const s = translate(translate(start, curves[0]), [j * 20, 0])
+    const s = translate(translate(start, curves[0]), [j * 30, 0])
     return (
       <path fill="none" strokeWidth="0.7" key={`path_${i * 100 + j}`} id={`path_${i * 100 + j}`}
         d={` M${s.join(" ")} c${makePtsString(c, j % 2 === 0)}`} stroke="#000" />);
