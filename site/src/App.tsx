@@ -8,6 +8,17 @@ import { interpreter } from '@pounce-lang/core';
 
 function App() {
   const [count, setCount] = useState(0)
+  const [pounceCode, setPounceCode] = useState(`
+  [[0 0][]]
+  [[0 20][5 -1 -1 -1 -1 -1]]
+  [[0 -30][1 1 1 1 1 -5]]
+  [[0 15][3 -1 -1 1 1 -3]]
+  [[0 -20][3 3 -1 -1 1 -5]]
+  [[0 10][5 1 1 -3 -3 -1]]
+  [[0 15][1 1 3 -3 -1 -1]]
+  [[0 -20][1 3 3 -1 -1 -5]]
+  [[0 10][5 -1 1 1 -3 -3]]
+  `)
   const svgRef: RefObject<HTMLDivElement> | null = useRef(null);
 
   const downloadSVG = useCallback((count: number) => {
@@ -21,17 +32,7 @@ function App() {
   const startPt = [40, 50]
   const columns = 3
   const rows = 3
-  const interp = interpreter(`
-  [[0 0][]]
-  [[0 20][5 -1 -1 -1 -1 -1]]
-  [[0 -30][1 1 1 1 1 -5]]
-  [[0 15][3 -1 -1 1 1 -3]]
-  [[0 -20][3 3 -1 -1 1 -5]]
-  [[0 10][5 1 1 -3 -3 -1]]
-  [[0 15][1 1 3 -3 -1 -1]]
-  [[0 -20][1 3 3 -1 -1 -5]]
-  [[0 10][5 -1 1 1 -3 -3]]
-  `);
+  const interp = interpreter(pounceCode);
 
   let result = interp.next();
   while (!result.done) {
@@ -49,6 +50,7 @@ function App() {
   //console.log(allPaths)
   return <>
   <div ref={svgRef}>
+    <textarea rows="10" cols="80" onBlur={(e)=> e?.target?.value ? setPounceCode(e?.target?.value):null}>{pounceCode}</textarea>
       <svg style={{ backgroundColor: "#ddd", strokeLinecap: "round",
     strokeLinejoin: "round" }} width="604" height="384" xmlns="http://www.w3.org/2000/svg">
         <g id="Layer_1" stroke="null">
