@@ -7,3 +7,18 @@
   [[0 10][1 1 3 -3 -2 -1]]
   [[0 -20][2 3 2 -1 -1 -5]]
   [[0 10][5 -1 1 2 -3 -3]]
+
+
+stack-copy [[drop] dip] depth 2 - times [dup] map drop
+
+# based on the depth try to fine columns and rows
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20
+depth sqrt dup floor - 0 > 
+[depth dup dup sqrt floor / dup [/] dip swap]
+[sqrt dup ] if-else
+
+# 60 is no good but 63 is 9x7
+[[d][d sqrt dup floor - 0 > 
+[d dup dup sqrt floor / dup [/] dip swap]
+[d sqrt dup ] if-else] pounce [] cons cons] [cr] compose
+1 cr 2 cr 3 cr 4 cr 5 cr 60 cr 63 cr 

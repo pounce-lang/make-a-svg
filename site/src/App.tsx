@@ -49,7 +49,7 @@ function App() {
   }
   //console.log(allPaths)
   return <>
-    <textarea rows="10" cols="80" onChange={(e)=> e?.target?.value ? setPounceCode(e?.target?.value):null}>{pounceCode}</textarea>
+    <textarea rows={10} cols={80} onChange={(e)=> e?.target?.value ? setPounceCode(e?.target?.value):null}>{pounceCode}</textarea>
     <div ref={svgRef}>
       <svg style={{ backgroundColor: "#ddd", strokeLinecap: "round",
     strokeLinejoin: "round" }} width="604" height="384" xmlns="http://www.w3.org/2000/svg">
