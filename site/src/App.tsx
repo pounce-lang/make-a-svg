@@ -9,7 +9,7 @@ import { interpreter } from '@pounce-lang/core';
 function App() {
   const [count, setCount] = useState(0)
   const [pounceCode, setPounceCode] = useState(`
-  [[0 0][]]
+  [[0 0][3 1 3 3 3 -1 -5 -7]]
   [[0 20][5 -1 -1 -1 -1 -1]]
   [[0 -30][1 1 1 1 1 -5]]
   [[0 15][3 -1 -1 1 1 -3]]
@@ -119,3 +119,36 @@ function downloadBlob(blob: Blob | MediaSource, filename: string) {
 }
 
 export default App
+
+// find a loopy using Pounce
+// #[0 [0 0 0 0] [[3 1][1 -1][1 -1][-1 -3]]] 
+// #[0 [0 0 0 0 0 0] [[3 5 1][-1 1 3][-1 1 3][-3 -1 1][-3 -1 1][-5 -3 -1]]] 
+// #[0 [0 0 0 0 0 0 0 0] [[3 5 7 1][-1 1 3 5][-1 1 3 5][-3 -1 1 3]
+// #[-3 -1 1 3][-5 -3 -1 1][-5 -3 -1 1][-7 -5 -3 -1]]] 
+// #[0 [0 0 0 0 0 0 0 0] 
+// #[[3 5 7 1][-1 1 3 5][-1 1 3 5][3 -1 1 -3]
+// #[-3 -1 1 3][-5 -3 -1 1][-5 -3 -1 1][-7 -5 -3 -1]]] 
+// [0 [0 0 0 0 0 0 0 0 0 0] 
+// [[7 5 3 1 9]
+// [7 5 3 1 -1][7 5 3 1 -1]
+// [5 3 1 -1 -3][5 3 1 -1 -3]
+// [3 1 -1 -3 -5][3 1 -1 -3 -5]
+// [1 -1 -3 -5 -7][1 -1 -3 -5 -7]
+// [-9 -7 -5 -3 -1]]]
+
+// [[[i choi pos]] [[i choi pos] choi false [0 == ||] reduce ! i 0 == &&] pounce][done?]compose
+
+// [[[i choi pos]] [[i choi pos] i choi swap outAt swap drop 0 ==] pounce]
+// [possible?]compose
+
+// [[[i choi pos]] [pop drop pos push] pounce]
+// [erase]compose
+
+// [[[i choi pos]] [[i choi pos] pos i outAt
+// uncons swap i swap [inAt] dip
+// i swap dup [+] dip
+// choi swap i inAt [] cons cons swap push  
+// ] pounce]
+// [do-move]compose
+
+// [done?][][do-move done? [possible?] dip || [][erase] if-else][] linrec
