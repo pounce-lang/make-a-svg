@@ -9,7 +9,7 @@ import { interpreter } from '@pounce-lang/core';
 function App() {
   const [count, setCount] = useState(0)
   const [pounceCode, setPounceCode] = useState(`
-  [[0 0][3 1 3 3 3 -1 -5 -7]]
+  [yellow [[[0 0][3 1 3 3 3 -1 -5 -7]]
   [[0 20][5 -1 -1 -1 -1 -1]]
   [[0 -30][1 1 1 1 1 -5]]
   [[0 15][3 -1 -1 1 1 -3]]
@@ -17,7 +17,25 @@ function App() {
   [[0 10][5 1 1 -3 -3 -1]]
   [[0 15][1 1 3 -3 -1 -1]]
   [[0 -20][1 3 3 -1 -1 -5]]
-  [[0 10][5 -1 1 1 -3 -3]]
+  [[0 10][5 -1 1 1 -3 -3]]]]
+  [magenta [[[0 0][3 1 3 3 3 -1 -5 -7]]
+  [[0 20][5 -1 -1 -1 -1 -1]]
+  [[0 -30][1 1 1 1 1 -5]]
+  [[0 15][3 -1 -1 1 1 -3]]
+  [[0 -20][3 3 -1 -1 1 -5]]
+  [[0 10][5 1 1 -3 -3 -1]]
+  [[0 15][1 1 3 -3 -1 -1]]
+  [[0 -20][1 3 3 -1 -1 -5]]
+  [[0 10][5 -1 1 1 -3 -3]]]]
+  [cyan [[[0 0][3 1 3 3 3 -1 -5 -7]]
+  [[0 20][5 -1 -1 -1 -1 -1]]
+  [[0 -30][1 1 1 1 1 -5]]
+  [[0 15][3 -1 -1 1 1 -3]]
+  [[0 -20][3 3 -1 -1 1 -5]]
+  [[0 10][5 1 1 -3 -3 -1]]
+  [[0 15][1 1 3 -3 -1 -1]]
+  [[0 -20][1 3 3 -1 -1 -5]]
+  [[0 10][5 -1 1 1 -3 -3]]]]
   `)
   const svgRef: RefObject<HTMLDivElement> | null = useRef(null);
 
@@ -28,7 +46,7 @@ function App() {
       downloadBlob(blob, `loopy-${count + 1}-of-50.svg`);
     }
   }, []);
-  
+
   const startPt = [40, 50]
   const columns = 3
   const rows = 3
@@ -40,43 +58,54 @@ function App() {
   }
   const value = result.value;
   // console.log(unParse(value.stack))
-  let allPaths = []
-  for (let x = 0; x < columns; x++) {
-    for (let y = 0; y < rows; y++) {
-      // console.log(translate(startPt, [x * 20, y * 20]))
-      allPaths.push([translate(startPt, [x * 160, y * 130]), value.stack[x * rows + y]])
+  const mkAllPaths = (startPt: number[], stack: any[]) => {
+    let allPaths = []
+    for (let x = 0; x < columns; x++) {
+      for (let y = 0; y < rows; y++) {
+        // console.log(translate(startPt, [x * 20, y * 20]))
+        allPaths.push([translate(startPt, [x * 160, y * 130]), stack[x * rows + y]])
+      }
     }
+    return allPaths;
   }
-  //console.log(allPaths)
-  return <>
-    <textarea rows={10} cols={80} onChange={(e)=> e?.target?.value ? setPounceCode(e?.target?.value):null}>{pounceCode}</textarea>
-    <div ref={svgRef}>
-      <svg style={{ backgroundColor: "#ddd", strokeLinecap: "round",
-    strokeLinejoin: "round" }} width="604" height="384" xmlns="http://www.w3.org/2000/svg">
-        <g id="Layer_1" stroke="null">
-          <title>Layer 1</title>
-          {allPaths.map((p: any, i) => makeLoopyPathDString(p[0], p[1], i))}
-        </g>
-      </svg>
-      </div>
-      <div>
-        <small style={{ paddingRight: 30 }}>{columns * rows} paths --  {count + 1} of 50</small>
 
-        <button disabled={count <= 0} onClick={
-          () => {
-            setCount((count - 1) % 50)
-          }
-        }>back</button>
-        <button onClick={
-          () => {
-            setCount((count + 1) % 50)
-          }
+  return <>
+    <textarea rows={10} cols={80} onChange={(e) => e?.target?.value ? setPounceCode(e?.target?.value) : null}>{pounceCode}</textarea>
+    <div ref={svgRef}>
+      <svg style={{
+        backgroundColor: "#ddd", strokeLinecap: "round",
+        strokeLinejoin: "round"
+      }} width="604" height="384" xmlns="http://www.w3.org/2000/svg">
+        {
+          value.stack.map((layer: any, l: number) => {
+            console.log(`"${layer[0]}"`)
+            return <g id={`Layer_${l}`}  
+            stroke={layer[0]} style={{ mixBlendMode: "multiply" }} >
+              <title>Layer {l} is for {layer[0]} of ycmk</title>
+              {mkAllPaths(startPt, layer[1]).map((p: any, i: number) => makeLoopyPathDString(p[0], p[1], i))}
+            </g>;
+          })
         }
-        >forth</button>
-      </div>
-      <button onClick={() => downloadSVG(count)} >dl_svg</button>
-      {/* <a href={'data:application/octet-stream;base64,' + btoa(getSvg(svgEle))} download={`bespokeSvg${count + 1}-of-50.svg`} >download svg</a> */}
-    </>
+      </svg>
+    </div>
+    <div>
+      <small style={{ paddingRight: 30 }}>{columns * rows} paths --  {count + 1} of 50</small>
+
+      <button disabled={count <= 0} onClick={
+        () => {
+          setCount((count - 1) % 50)
+        }
+      }>back</button>
+      <button onClick={
+        () => {
+          setCount((count + 1) % 50)
+        }
+      }
+      >forth</button>
+    </div>
+    <button onClick={() => downloadSVG(count)} >dl_svg</button>
+    {/* <a href={'data:application/octet-stream;base64,' + btoa(getSvg(svgEle))} download={`bespokeSvg${count + 1}-of-50.svg`} >download svg</a> */}
+  </>
 }
 
 const translate = (a: number[], offset: number[]) => {
@@ -89,20 +118,20 @@ const makeLoopyPathDString = (start: number[], curves: number[][], i: number) =>
   const makePtsString = (jump: number, top: boolean) => {
     //console.log("jump", jump)
     let pta = [[0, 20], [30, 20], [30, 0]]
-    if (top? jump >0 : jump < 0) {
-      pta = pta.map(p => ([p[0], p[1]*-1]))
+    if (top ? jump > 0 : jump < 0) {
+      pta = pta.map(p => ([p[0], p[1] * -1]))
     }
     return pta.map(pt => mkPtStr(pt, jump)).join(", ")
   }
   const allCurves = curves[1].map((c: number, j) => {
     const s = translate(translate(start, curves[0]), [j * 30, 0])
     return (
-      <path fill="none" strokeWidth="0.7" key={`path_${i * 100 + j}`} id={`path_${i * 100 + j}`}
-        d={` M${s.join(" ")} c${makePtsString(c, j % 2 === 0)}`} stroke="#000" />);
+      <path fill="none" strokeWidth="3" key={`path_${i * 100 + j}`} id={`path_${i * 100 + j}`}
+        d={` M${s.join(" ")} c${makePtsString(c, j % 2 === 0)}`} />);
   })
 
   //console.log(allCurves)
-  return <g key={"some_"+i}>{allCurves}</g>
+  return <g key={"some_" + i}>{allCurves}</g>
 }
 
 function downloadBlob(blob: Blob | MediaSource, filename: string) {
@@ -120,35 +149,4 @@ function downloadBlob(blob: Blob | MediaSource, filename: string) {
 
 export default App
 
-// find a loopy using Pounce
-// #[0 [0 0 0 0] [[3 1][1 -1][1 -1][-1 -3]]] 
-// #[0 [0 0 0 0 0 0] [[3 5 1][-1 1 3][-1 1 3][-3 -1 1][-3 -1 1][-5 -3 -1]]] 
-// #[0 [0 0 0 0 0 0 0 0] [[3 5 7 1][-1 1 3 5][-1 1 3 5][-3 -1 1 3]
-// #[-3 -1 1 3][-5 -3 -1 1][-5 -3 -1 1][-7 -5 -3 -1]]] 
-// #[0 [0 0 0 0 0 0 0 0] 
-// #[[3 5 7 1][-1 1 3 5][-1 1 3 5][3 -1 1 -3]
-// #[-3 -1 1 3][-5 -3 -1 1][-5 -3 -1 1][-7 -5 -3 -1]]] 
-// [0 [0 0 0 0 0 0 0 0 0 0] 
-// [[7 5 3 1 9]
-// [7 5 3 1 -1][7 5 3 1 -1]
-// [5 3 1 -1 -3][5 3 1 -1 -3]
-// [3 1 -1 -3 -5][3 1 -1 -3 -5]
-// [1 -1 -3 -5 -7][1 -1 -3 -5 -7]
-// [-9 -7 -5 -3 -1]]]
-
-// [[[i choi pos]] [[i choi pos] choi false [0 == ||] reduce ! i 0 == &&] pounce][done?]compose
-
-// [[[i choi pos]] [[i choi pos] i choi swap outAt swap drop 0 ==] pounce]
-// [possible?]compose
-
-// [[[i choi pos]] [pop drop pos push] pounce]
-// [erase]compose
-
-// [[[i choi pos]] [[i choi pos] pos i outAt
-// uncons swap i swap [inAt] dip
-// i swap dup [+] dip
-// choi swap i inAt [] cons cons swap push  
-// ] pounce]
-// [do-move]compose
-
-// [done?][][do-move done? [possible?] dip || [][erase] if-else][] linrec
+// axicli file.svg --mode layers --layer 1
