@@ -9,37 +9,39 @@ import { interpreter } from '@pounce-lang/core';
 function App() {
   const [count, setCount] = useState(0)
   const [pounceCode, setPounceCode] = useState(`
-  [yellow [[[0 0][3 1 3 3 3 -1 -5 -7]]
+  [yellow [[[-1 10.1][3 2 1 2.4 -2 -2]]
   [[0 20][5 -1 -1 -1 -1 -1]]
-  [[0 -30][1 1 1 1 1 -5]]
+  [[-1 -30][1 1 1 1 1 -5]]
   [[0 15][3 -1 -1 1 1 -3]]
   [[0 -20][3 3 -1 -1 1 -5]]
   [[0 10][5 1 1 -3 -3 -1]]
   [[0 15][1 1 3 -3 -1 -1]]
-  [[0 -20][1 3 3 -1 -1 -5]]
+  [[0 -20][1 -1 3 -1 1 -5]]
   [[0 10][5 -1 1 1 -3 -3]]]]
-  [magenta [[[0 0][3 1 3 3 3 -1 -5 -7]]
+  [magenta [[[-2 10][2 -1 3  3.42 -3 -1]]
   [[0 20][5 -1 -1 -1 -1 -1]]
-  [[0 -30][1 1 1 1 1 -5]]
+  [[0 -33][1 1 1 1 1 -5]]
   [[0 15][3 -1 -1 1 1 -3]]
   [[0 -20][3 3 -1 -1 1 -5]]
   [[0 10][5 1 1 -3 -3 -1]]
   [[0 15][1 1 3 -3 -1 -1]]
-  [[0 -20][1 3 3 -1 -1 -5]]
+  [[0 -20][1 3 3 -3 -1 -5]]
   [[0 10][5 -1 1 1 -3 -3]]]]
-  [cyan [[[0 0][3 1 3 3 3 -1 -5 -7]]
+  [cyan [[[-3 10.2][3 1 1 -3 -3 -1]]
   [[0 20][5 -1 -1 -1 -1 -1]]
-  [[0 -30][1 1 1 1 1 -5]]
+  [[3 -29][1 1 1 1 1 -5]]
   [[0 15][3 -1 -1 1 1 -3]]
   [[0 -20][3 3 -1 -1 1 -5]]
   [[0 10][5 1 1 -3 -3 -1]]
   [[0 15][1 1 3 -3 -1 -1]]
-  [[0 -20][1 3 3 -1 -1 -5]]
+  [[0 -20][1 3 2 -1 -1 -5]]
   [[0 10][5 -1 1 1 -3 -3]]]]
-  `)
+    `)
   const svgRef: RefObject<HTMLDivElement> | null = useRef(null);
 
   const downloadSVG = useCallback((count: number) => {
+    svgRef?
+    .current.setAttributeNS("xmlns", "inkscape", "http://www.inkscape.org/namespaces/inkscape")
     const svg = svgRef?.current?.innerHTML;
     if (svg) {
       const blob = new Blob([svg], { type: "image/svg+xml" });
@@ -68,7 +70,7 @@ function App() {
     }
     return allPaths;
   }
-
+  
   return <>
     <textarea rows={10} cols={80} onChange={(e) => e?.target?.value ? setPounceCode(e?.target?.value) : null}>{pounceCode}</textarea>
     <div ref={svgRef}>
@@ -78,8 +80,7 @@ function App() {
       }} width="604" height="384" xmlns="http://www.w3.org/2000/svg">
         {
           value.stack.map((layer: any, l: number) => {
-            console.log(`"${layer[0]}"`)
-            return <g id={`Layer_${l}`}  
+            return <g id={`Layer_${l}`} inkscapeGroupmode="layer" inkscapeLabel={`${l} ${layer[0]}`}
             stroke={layer[0]} style={{ mixBlendMode: "multiply" }} >
               <title>Layer {l} is for {layer[0]} of ycmk</title>
               {mkAllPaths(startPt, layer[1]).map((p: any, i: number) => makeLoopyPathDString(p[0], p[1], i))}
@@ -150,3 +151,31 @@ function downloadBlob(blob: Blob | MediaSource, filename: string) {
 export default App
 
 // axicli file.svg --mode layers --layer 1
+
+// [yellow [[[-1 10.1][3 1 1 2.4 -3 -2]]
+// [[0 20][5 -1 -1 -1 -1 -1]]
+// [[0 -30][1 1 1 1 1 -5]]
+// [[0 15][3 -1 -1 1 1 -3]]
+// [[0 -20][3 3 -1 -1 1 -5]]
+// [[0 10][5 1 1 -3 -3 -1]]
+// [[0 15][1 1 3 -3 -1 -1]]
+// [[0 -20][1 3 3 -1 -1 -5]]
+// [[0 10][5 -1 1 1 -3 -3]]]]
+// [magenta [[[-2 10][3 1 3  2.4 -3 -1]]
+// [[0 20][5 -1 -1 -1 -1 -1]]
+// [[0 -30][1 1 1 1 1 -5]]
+// [[0 15][3 -1 -1 1 1 -3]]
+// [[0 -20][3 3 -1 -1 1 -5]]
+// [[0 10][5 1 1 -3 -3 -1]]
+// [[0 15][1 1 3 -3 -1 -1]]
+// [[0 -20][1 3 3 -1 -1 -5]]
+// [[0 10][5 -1 1 1 -3 -3]]]]
+// [cyan [[[-3 10.2][3 1 1 -3 -3 -1]]
+// [[0 20][5 -1 -1 -1 -1 -1]]
+// [[0 -30][1 1 1 1 1 -5]]
+// [[0 15][3 -1 -1 1 1 -3]]
+// [[0 -20][3 3 -1 -1 1 -5]]
+// [[0 10][5 1 1 -3 -3 -1]]
+// [[0 15][1 1 3 -3 -1 -1]]
+// [[0 -20][1 3 3 -1 -1 -5]]
+// [[0 10][5 -1 1 1 -3 -3]]]]

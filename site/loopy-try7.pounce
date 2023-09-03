@@ -23,7 +23,15 @@ depth sqrt dup floor - 0 >
 [d sqrt dup ] if-else] pounce [] cons cons] [cr] compose
 1 cr 2 cr 3 cr 4 cr 5 cr 60 cr 63 cr 
 
+#leap in then out
+[[] [cons] depth 2 - times] [unleap] compose
+[[depth] [[leap] depth times [unleap] depth times] pounce] [leapdown] compose
+[[1 1 + 4 4 * 5]] 2 leapdown
 
+# leap in and in then out and out
+[[] [cons] depth 2 - times] [unleap] compose
+[[[3 4 +][4 5 +]]] [[leap] map] map [[unleap] map] map
+#>[[[7] [9]]]
 
 ##find a loopy using Pounce
 #[0 [0 0 0 0] [[3 1][1 -1][1 -1][-1 -3]]] 
