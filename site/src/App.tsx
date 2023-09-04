@@ -40,12 +40,21 @@ function App() {
   const svgRef: RefObject<HTMLDivElement> | null = useRef(null);
 
   const downloadSVG = useCallback((count: number) => {
-    svgRef?
-    .current.setAttributeNS("xmlns", "inkscape", "http://www.inkscape.org/namespaces/inkscape")
+    // since React will not do namespaced attributes (e.g. inkscape:label="0-Yellow"), so....
+    svgRef?.current?.getElementsByTagName("svg")[0]?.setAttribute("xmlns:inkscape", "http://www.inkscape.org/namespaces/inkscape");
+    const g = Array.from(svgRef?.current?.getElementsByTagName("g") as ArrayLike<SVGGElement>);
+    g?.map(gn => {
+      const attVal = gn.getAttribute("id");
+      if (attVal) {
+        gn?.setAttribute("inkscape:groupmode", "layer");
+        gn?.setAttribute("inkscape:label", attVal ?? '');
+      }
+    });
+
     const svg = svgRef?.current?.innerHTML;
     if (svg) {
       const blob = new Blob([svg], { type: "image/svg+xml" });
-      downloadBlob(blob, `loopy-${count + 1}-of-50.svg`);
+      downloadBlob(blob, `ycmk-${count + 1}-of-50.svg`);
     }
   }, []);
 
@@ -70,9 +79,9 @@ function App() {
     }
     return allPaths;
   }
-  
+
   return <>
-    <textarea rows={10} cols={80} onChange={(e) => e?.target?.value ? setPounceCode(e?.target?.value) : null}>{pounceCode}</textarea>
+    <textarea rows={10} cols={80} onChange={(e) => e?.target?.value ? setPounceCode(e?.target?.value) : null} value={pounceCode} ></textarea>
     <div ref={svgRef}>
       <svg style={{
         backgroundColor: "#ddd", strokeLinecap: "round",
@@ -80,8 +89,8 @@ function App() {
       }} width="604" height="384" xmlns="http://www.w3.org/2000/svg">
         {
           value.stack.map((layer: any, l: number) => {
-            return <g id={`Layer_${l}`} inkscapeGroupmode="layer" inkscapeLabel={`${l} ${layer[0]}`}
-            stroke={layer[0]} style={{ mixBlendMode: "multiply" }} >
+            return <g id={`${l}-${layer[0]}`} key={`${l}`}
+              stroke={layer[0]} style={{ mixBlendMode: "multiply" }} >
               <title>Layer {l} is for {layer[0]} of ycmk</title>
               {mkAllPaths(startPt, layer[1]).map((p: any, i: number) => makeLoopyPathDString(p[0], p[1], i))}
             </g>;
@@ -132,7 +141,7 @@ const makeLoopyPathDString = (start: number[], curves: number[][], i: number) =>
   })
 
   //console.log(allCurves)
-  return <g key={"some_" + i}>{allCurves}</g>
+  return <>{allCurves}</>
 }
 
 function downloadBlob(blob: Blob | MediaSource, filename: string) {
