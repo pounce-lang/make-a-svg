@@ -9,33 +9,39 @@ import { interpreter } from '@pounce-lang/core';
 function App() {
   const [count, setCount] = useState(0)
   const [pounceCode, setPounceCode] = useState(`
-  [yellow [[[-1 10.1][1 7 1 -3 5 -1 1 -5 -3 -3]]
-  [[0 20][5 -1 -1 -1 -1 -1]]
-  [[-1 -30][1 1 1 1 1 -5]]
-  [[0 15][3 -1 -1 1 1 -3]]
-  [[0 -20][3 3 -1 -1 1 -5]]
-  [[0 10][5 1 1 -3 -3 -1]]
-  [[0 15][1 1 3 -3 -1 -1]]
-  [[0 -20][1 -1 3 -1 1 -5]]
-  [[0 10][5 -1 1 1 -3 -3]]]]
-  [magenta [[[-2 10][1 7 1 -3 5 -1 1 -5 -3 -3]]
-  [[0 20][5 -1 -1 -1 -1 -1]]
-  [[0 -33][1 1 1 1 1 -5]]
-  [[0 15][3 -1 -1 1 1 -3]]
-  [[0 -20][3 3 -1 -1 1 -5]]
-  [[0 10][5 1 1 -3 -3 -1]]
-  [[0 15][1 1 3 -3 -1 -1]]
-  [[0 -20][1 3 3 -3 -1 -5]]
-  [[0 10][5 -1 1 1 -3 -3]]]]
-  [cyan [[[-3 10.2][1 7 1 -3 5 -1 1 -5 -3 -3]]
-  [[0 20][5 -1 -1 -1 -1 -1]]
-  [[3 -29][1 1 1 1 1 -5]]
-  [[0 15][3 -1 -1 1 1 -3]]
-  [[0 -20][3 3 -1 -1 1 -5]]
-  [[0 10][5 1 1 -3 -3 -1]]
-  [[0 15][1 1 3 -3 -1 -1]]
-  [[0 -20][1 3 2 -1 -1 -5]]
-  [[0 10][5 -1 1 1 -3 -3]]]]
+  # random generator
+[[0 [0 0 0 0 0 0 0 0] 
+[[7 5 3 1 ]
+[5 3 1 -1][5 3 1 -1]
+[3 1 -1 -3][3 1 -1 -3]
+[1 -1 -3 -5][1 -1 -3 -5]
+[-7 -5 -3 -1]]]] [base] compose
+ 16 seedrandom random drop
+
+[size random * floor outAt swap [dup] dip swap [!=] cons filter][uncons-random-item] compose
+
+[[[i choi pos]] [[i choi pos] choi false [0 == ||] reduce ! i 0 == &&] pounce][done?]compose
+
+[[[i choi pos]] [[i choi pos] i choi swap outAt swap drop 0 ==] pounce]
+[possible?]compose
+
+[[[i choi pos]] [pop drop pos push] pounce]
+[erase]compose
+
+[[[i choi pos]] [[i choi pos] pos i outAt
+uncons-random-item swap i swap [inAt] dip
+i swap dup [+] dip
+choi swap i inAt [] cons cons swap push  
+] pounce]
+[do-move]compose
+
+[[done?][][do-move done? [possible?] dip || [][erase] if-else][] linrec
+[[drop] depth 2 - times] dip pop drop pop swap drop][mk-sequence] compose
+base mk-sequence [] cons
+[[base mk-sequence] dip cons] 3 times 
+[drop]dip
+[] cons
+black swap cons
     `)
   const svgRef: RefObject<HTMLDivElement> | null = useRef(null);
 
@@ -58,9 +64,9 @@ function App() {
     }
   }, []);
 
-  const startPt = [40, 50]
-  const columns = 3
-  const rows = 3
+  const startPt = [40, 120]
+  const columns = 2
+  const rows = 2
   const interp = interpreter(pounceCode);
 
   let result = interp.next();
@@ -74,7 +80,7 @@ function App() {
     for (let x = 0; x < columns; x++) {
       for (let y = 0; y < rows; y++) {
         // console.log(translate(startPt, [x * 20, y * 20]))
-        allPaths.push([translate(startPt, [x * 160, y * 130]), stack[x * rows + y]])
+        allPaths.push([translate(startPt, [x * 260, y * 180]), stack[x * rows + y]])
       }
     }
     return allPaths;
@@ -133,8 +139,9 @@ const makeLoopyPathDString = (start: number[], curves: number[][], i: number) =>
     }
     return pta.map(pt => mkPtStr(pt, jump)).join(", ")
   }
-  const allCurves = curves[1].map((c: number, j) => {
-    const s = translate(translate(start, curves[0]), [j * 30, 0])
+  const allCurves = curves.map((c: number[], j) => {
+    // console.log(c, i, j);
+    const s = translate(translate(start, curves), [j * 30, 0])
     return (
       <path fill="none" strokeWidth="3" key={`path_${i * 100 + j}`} id={`path_${i * 100 + j}`}
         d={` M${s.join(" ")} c${makePtsString(c, j % 2 === 0)}`} />);
@@ -190,7 +197,7 @@ export default App
 // [[0 10][5 -1 1 1 -3 -3]]]]
 
 
-// // random generator
+// # random generator
 // [0 [0 0 0 0 0 0 0 0 0 0] 
 // [[7 5 3 1 9]
 // [7 5 3 1 -1][7 5 3 1 -1]
