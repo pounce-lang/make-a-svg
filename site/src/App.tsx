@@ -16,7 +16,7 @@ function App() {
 [3 1 -1 -3][3 1 -1 -3]
 [1 -1 -3 -5][1 -1 -3 -5]
 [-7 -5 -3 -1]]]] [base] compose
- 16 seedrandom random drop
+ ${count+1} seedrandom random drop
 
 [size random * floor outAt swap [dup] dip swap [!=] cons filter][uncons-random-item] compose
 
@@ -41,8 +41,19 @@ base mk-sequence [] cons
 [[base mk-sequence] dip cons] 3 times 
 [drop]dip
 [] cons
-black swap cons
-    `)
+cyan swap cons
+[base mk-sequence [] cons
+[[base mk-sequence] dip cons] 3 times 
+[drop]dip
+[] cons
+magenta swap cons]dip
+[base mk-sequence [] cons
+[[base mk-sequence] dip cons] 3 times 
+[drop]dip
+[] cons
+yellow swap cons]dip2
+#[] cons cons cons
+`)
   const svgRef: RefObject<HTMLDivElement> | null = useRef(null);
 
   const downloadSVG = useCallback((count: number) => {
@@ -64,7 +75,7 @@ black swap cons
     }
   }, []);
 
-  const startPt = [40, 120]
+  const startPt = [50, 110]
   const columns = 2
   const rows = 2
   const interp = interpreter(pounceCode);
@@ -80,7 +91,7 @@ black swap cons
     for (let x = 0; x < columns; x++) {
       for (let y = 0; y < rows; y++) {
         // console.log(translate(startPt, [x * 20, y * 20]))
-        allPaths.push([translate(startPt, [x * 260, y * 180]), stack[x * rows + y]])
+        allPaths.push([translate(startPt, [x * 260, y * 150]), stack[x * rows + y]])
       }
     }
     return allPaths;
@@ -90,7 +101,7 @@ black swap cons
     <textarea rows={10} cols={80} onChange={(e) => e?.target?.value ? setPounceCode(e?.target?.value) : null} value={pounceCode} ></textarea>
     <div ref={svgRef}>
       <svg style={{
-        backgroundColor: "#ddd", strokeLinecap: "round",
+        backgroundColor: "#fff", strokeLinecap: "round",
         strokeLinejoin: "round"
       }} width="604" height="384" xmlns="http://www.w3.org/2000/svg">
         {
