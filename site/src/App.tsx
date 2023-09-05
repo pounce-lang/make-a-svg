@@ -9,14 +9,13 @@ import { interpreter } from '@pounce-lang/core';
 function App() {
   const [count, setCount] = useState(0)
   const [pounceCode, setPounceCode] = useState(`
-  # random generator
+ seedrandom random drop
 [[0 [0 0 0 0 0 0 0 0] 
 [[7 5 3 1 ]
 [5 3 1 -1][5 3 1 -1]
 [3 1 -1 -3][3 1 -1 -3]
 [1 -1 -3 -5][1 -1 -3 -5]
 [-7 -5 -3 -1]]]] [base] compose
- ${count+1} seedrandom random drop
 
 [size random * floor outAt swap [dup] dip swap [!=] cons filter][uncons-random-item] compose
 
@@ -38,21 +37,20 @@ choi swap i inAt [] cons cons swap push
 [[done?][][do-move done? [possible?] dip || [][erase] if-else][] linrec
 [[drop] depth 2 - times] dip pop drop pop swap drop][mk-sequence] compose
 base mk-sequence [] cons
-[[base mk-sequence] dip cons] 3 times 
+[[base mk-sequence] dip cons] 5 times 
 [drop]dip
 [] cons
 cyan swap cons
 [base mk-sequence [] cons
-[[base mk-sequence] dip cons] 3 times 
+[[base mk-sequence] dip cons] 5 times 
 [drop]dip
 [] cons
 magenta swap cons]dip
 [base mk-sequence [] cons
-[[base mk-sequence] dip cons] 3 times 
+[[base mk-sequence] dip cons] 5 times 
 [drop]dip
 [] cons
 yellow swap cons]dip2
-#[] cons cons cons
 `)
   const svgRef: RefObject<HTMLDivElement> | null = useRef(null);
 
@@ -71,14 +69,14 @@ yellow swap cons]dip2
     const svg = svgRef?.current?.innerHTML;
     if (svg) {
       const blob = new Blob([svg], { type: "image/svg+xml" });
-      downloadBlob(blob, `ycmk-${count + 1}-of-50.svg`);
+      downloadBlob(blob, `ymck-${count + 1}-of-50.svg`);
     }
   }, []);
 
-  const startPt = [50, 110]
-  const columns = 2
+  const startPt = [30, 100]
+  const columns = 3
   const rows = 2
-  const interp = interpreter(pounceCode);
+  const interp = interpreter(`${count+1} ${pounceCode}`);
 
   let result = interp.next();
   while (!result.done) {
@@ -91,14 +89,14 @@ yellow swap cons]dip2
     for (let x = 0; x < columns; x++) {
       for (let y = 0; y < rows; y++) {
         // console.log(translate(startPt, [x * 20, y * 20]))
-        allPaths.push([translate(startPt, [x * 260, y * 150]), stack[x * rows + y]])
+        allPaths.push([translate(startPt, [x * 190, y * 180]), stack[x * rows + y]])
       }
     }
     return allPaths;
   }
 
   return <>
-    <textarea rows={10} cols={80} onChange={(e) => e?.target?.value ? setPounceCode(e?.target?.value) : null} value={pounceCode} ></textarea>
+    <textarea rows={10} cols={80} onChange={(e) => e?.target?.value ? setPounceCode(e?.target?.value) : null} value={`${count+1} ${pounceCode}`} ></textarea>
     <div ref={svgRef}>
       <svg style={{
         backgroundColor: "#fff", strokeLinecap: "round",
@@ -144,7 +142,7 @@ const makeLoopyPathDString = (start: number[], curves: number[], i: number) => {
   const mkPtStr = (pt: number[], scale: number): string => pt.map((n) => n * scale).join(" ")
   const makePtsString = (jump: number, top: boolean) => {
     //console.log("jump", jump)
-    let pta = [[0, 20], [30, 20], [30, 0]]
+    let pta = [[0, 16], [24, 16], [24, 0]]
     if (top ? jump > 0 : jump < 0) {
       pta = pta.map(p => ([p[0], p[1] * -1]))
     }
@@ -152,7 +150,7 @@ const makeLoopyPathDString = (start: number[], curves: number[], i: number) => {
   }
   const allCurves = curves.map((c: number, j) => {
     // console.log(c, i, j);
-    const s = translate(start, [j * 30, 0])
+    const s = translate(start, [j * 24, 0])
     return (
       <path fill="none" strokeWidth="3" key={`path_${i * 100 + j}`} id={`path_${i * 100 + j}`}
         d={` M${s.join(" ")} c${makePtsString(c, j % 2 === 0)}`} />);
