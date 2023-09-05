@@ -140,7 +140,7 @@ const translate = (a: number[], offset: number[]) => {
 }
 
 
-const makeLoopyPathDString = (start: number[], curves: number[][], i: number) => {
+const makeLoopyPathDString = (start: number[], curves: number[], i: number) => {
   const mkPtStr = (pt: number[], scale: number): string => pt.map((n) => n * scale).join(" ")
   const makePtsString = (jump: number, top: boolean) => {
     //console.log("jump", jump)
@@ -150,9 +150,9 @@ const makeLoopyPathDString = (start: number[], curves: number[][], i: number) =>
     }
     return pta.map(pt => mkPtStr(pt, jump)).join(", ")
   }
-  const allCurves = curves.map((c: number[], j) => {
+  const allCurves = curves.map((c: number, j) => {
     // console.log(c, i, j);
-    const s = translate(translate(start, curves), [j * 30, 0])
+    const s = translate(start, [j * 30, 0])
     return (
       <path fill="none" strokeWidth="3" key={`path_${i * 100 + j}`} id={`path_${i * 100 + j}`}
         d={` M${s.join(" ")} c${makePtsString(c, j % 2 === 0)}`} />);
