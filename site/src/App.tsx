@@ -10,12 +10,15 @@ function App() {
   const [count, setCount] = useState(0)
   const [pounceCode, setPounceCode] = useState(`
  seedrandom random drop
-[[0 [0 0 0 0 0 0 0 0] 
-[[7 5 3 1 ]
-[5 3 1 -1][5 3 1 -1]
-[3 1 -1 -3][3 1 -1 -3]
-[1 -1 -3 -5][1 -1 -3 -5]
-[-7 -5 -3 -1]]]] [base] compose
+[[0 [0 0 0 0 0 0 0 0 0 0 0 0] 
+[[11 9 7 5 3 1 ]
+[9 7 5 3 1 -1][9 7 5 3 1 -1]
+[7 5 3 1 -1 -3][7 5 3 1 -1 -3]
+[5 3 1 -1 -3 -5][5 3 1 -1 -3 -5]
+[3 1 -1 -3 -5 -7][3 1 -1 -3 -5 -7]
+[1 -1 -3 -5 -7 -9][1 -1 -3 -5 -7 -9]
+[-1 -3 -5 -7 -9 -11]
+]]] [base] compose
 
 [size random * floor outAt swap [dup] dip swap [!=] cons filter][uncons-random-item] compose
 
@@ -69,11 +72,12 @@ yellow swap cons]dip2
     const svg = svgRef?.current?.innerHTML;
     if (svg) {
       const blob = new Blob([svg], { type: "image/svg+xml" });
-      downloadBlob(blob, `ymck-${count + 1}-of-50.svg`);
+      downloadBlob(blob, `ymc_${columns}_${rows}_${points}-${count + 1}-of-50.svg`);
     }
   }, []);
 
-  const startPt = [80, 75]
+  const startPt = [60, 55]
+  const points = 12
   const columns = 5
   const rows = 4
   const interp = interpreter(`${count+1} ${pounceCode}`);
@@ -89,7 +93,7 @@ yellow swap cons]dip2
     for (let x = 0; x < columns; x++) {
       for (let y = 0; y < rows; y++) {
         // console.log(translate(startPt, [x * 20, y * 20]))
-        allPaths.push([translate(startPt, [x * 90, y * 80]), stack[x * rows + y]])
+        allPaths.push([translate(startPt, [x * 100, y * 90]), stack[x * rows + y]])
       }
     }
     return allPaths;
@@ -104,7 +108,7 @@ yellow swap cons]dip2
       }} width="604" height="384" xmlns="http://www.w3.org/2000/svg">
         {
           value.stack.map((layer: any, l: number) => {
-            return <g id={`${l}-${layer[0]}`} key={`${l}`}
+            return <g id={`${l}-${layer[0]}`} key={`${l}-${layer[0]}`}
               stroke={layer[0]} style={{ mixBlendMode: "multiply" }} >
               <title>Layer {l} is for {layer[0]} of ycmk</title>
               {mkAllPaths(startPt, layer[1]).map((p: any, i: number) => makeLoopyPathDString(p[0], p[1], i))}
@@ -139,10 +143,12 @@ const translate = (a: number[], offset: number[]) => {
 
 
 const makeLoopyPathDString = (start: number[], curves: number[], i: number) => {
+  const diameter = 8
+  const scaled_d = diameter * 2 / 3
   const mkPtStr = (pt: number[], scale: number): string => pt.map((n) => n * scale).join(" ")
   const makePtsString = (jump: number, top: boolean) => {
     //console.log("jump", jump)
-    let pta = [[0, 8], [12, 8], [12, 0]]
+    let pta = [[0, scaled_d], [diameter, scaled_d], [diameter, 0]]
     if (top ? jump > 0 : jump < 0) {
       pta = pta.map(p => ([p[0], p[1] * -1]))
     }
@@ -150,7 +156,7 @@ const makeLoopyPathDString = (start: number[], curves: number[], i: number) => {
   }
   const allCurves = curves.map((c: number, j) => {
     // console.log(c, i, j);
-    const s = translate(start, [j * 12, 0])
+    const s = translate(start, [j * diameter, 0])
     return (
       <path fill="none" strokeWidth="3" key={`path_${i * 100 + j}`} id={`path_${i * 100 + j}`}
         d={` M${s.join(" ")} c${makePtsString(c, j % 2 === 0)}`} />);
@@ -175,62 +181,3 @@ function downloadBlob(blob: Blob | MediaSource, filename: string) {
 
 export default App
 
-// axicli file.svg --mode layers --layer 1
-
-// [yellow [[[-1 10.1][3 1 1 2.4 -3 -2]]
-// [[0 20][5 -1 -1 -1 -1 -1]]
-// [[0 -30][1 1 1 1 1 -5]]
-// [[0 15][3 -1 -1 1 1 -3]]
-// [[0 -20][3 3 -1 -1 1 -5]]
-// [[0 10][5 1 1 -3 -3 -1]]
-// [[0 15][1 1 3 -3 -1 -1]]
-// [[0 -20][1 3 3 -1 -1 -5]]
-// [[0 10][5 -1 1 1 -3 -3]]]]
-// [magenta [[[-2 10][3 1 3  2.4 -3 -1]]
-// [[0 20][5 -1 -1 -1 -1 -1]]
-// [[0 -30][1 1 1 1 1 -5]]
-// [[0 15][3 -1 -1 1 1 -3]]
-// [[0 -20][3 3 -1 -1 1 -5]]
-// [[0 10][5 1 1 -3 -3 -1]]
-// [[0 15][1 1 3 -3 -1 -1]]
-// [[0 -20][1 3 3 -1 -1 -5]]
-// [[0 10][5 -1 1 1 -3 -3]]]]
-// [cyan [[[-3 10.2][3 1 1 -3 -3 -1]]
-// [[0 20][5 -1 -1 -1 -1 -1]]
-// [[0 -30][1 1 1 1 1 -5]]
-// [[0 15][3 -1 -1 1 1 -3]]
-// [[0 -20][3 3 -1 -1 1 -5]]
-// [[0 10][5 1 1 -3 -3 -1]]
-// [[0 15][1 1 3 -3 -1 -1]]
-// [[0 -20][1 3 3 -1 -1 -5]]
-// [[0 10][5 -1 1 1 -3 -3]]]]
-
-
-// # random generator
-// [0 [0 0 0 0 0 0 0 0 0 0] 
-// [[7 5 3 1 9]
-// [7 5 3 1 -1][7 5 3 1 -1]
-// [5 3 1 -1 -3][5 3 1 -1 -3]
-// [3 1 -1 -3 -5][3 1 -1 -3 -5]
-// [1 -1 -3 -5 -7][1 -1 -3 -5 -7]
-// [-9 -7 -5 -3 -1]]]
-//  10 seedrandom random drop
-
-// [size random * floor outAt swap [dup] dip swap [!=] cons filter][uncons-random-item] compose
-
-// [[[i choi pos]] [[i choi pos] choi false [0 == ||] reduce ! i 0 == &&] pounce][done?]compose
-
-// [[[i choi pos]] [[i choi pos] i choi swap outAt swap drop 0 ==] pounce]
-// [possible?]compose
-
-// [[[i choi pos]] [pop drop pos push] pounce]
-// [erase]compose
-
-// [[[i choi pos]] [[i choi pos] pos i outAt
-// uncons-random-item swap i swap [inAt] dip
-// i swap dup [+] dip
-// choi swap i inAt [] cons cons swap push  
-// ] pounce]
-// [do-move]compose
-
-// [done?][][do-move done? [possible?] dip || [][erase] if-else][] linrec
