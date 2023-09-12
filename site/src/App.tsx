@@ -8,19 +8,30 @@ import { interpreter } from '@pounce-lang/core';
 
 function App() {
   const [count, setCount] = useState(0)
+  const [cols, setCols] = useState(3)
+   const [rows, setRows] = useState(2)
   const [pounceCode, setPounceCode] = useState(`
  seedrandom random drop
-[[0 [0 0 0 0 0 0 0 0 0 0 0 0] 
-[[11 9 7 5 3 1 ]
-[9 7 5 3 1 -1][9 7 5 3 1 -1]
-[7 5 3 1 -1 -3][7 5 3 1 -1 -3]
-[5 3 1 -1 -3 -5][5 3 1 -1 -3 -5]
-[3 1 -1 -3 -5 -7][3 1 -1 -3 -5 -7]
-[1 -1 -3 -5 -7 -9][1 -1 -3 -5 -7 -9]
-[-1 -3 -5 -7 -9 -11]
-]]] [base] compose
+ [${cols}][cols]compose
+ [${rows}][rows]compose
+ [] cons [height] compose
+[[0 [0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+[[13 11 9 7 5 3 1 ]
+[11 9 7 5 3 1 -1][11 9 7 5 3 1 -1]
+[9 7 5 3 1 -1 -3][9 7 5 3 1 -1 -3]
+[7 5 3 1 -1 -3 -5][7 5 3 1 -1 -3 -5]
+[5 3 1 -1 -3 -5 -7][5 3 1 -1 -3 -5 -7]
+[3 1 -1 -3 -5 -7 -9][3 1 -1 -3 -5 -7 -9]
+[1 -1 -3 -5 -7 -9 -11][1 -1 -3 -5 -7 -9 -11]
+[-1 -3 -5 -7 -9 -11 -13]]
+]] [base] compose
 
-[size random * floor outAt swap [dup] dip swap [!=] cons filter][uncons-random-item] compose
+[
+  # pick one of two lowest 
+  [size 1 <=] [] [uncons [abs [abs]dip >=] split] [concat] binrec
+  [size 1 >][random 0.5 + floor outAt][0 outAt] ifte
+
+  swap [dup] dip swap [!=] cons filter][uncons-random-item] compose
 
 [[[i choi pos]] [[i choi pos] choi false [0 == ||] reduce ! i 0 == &&] pounce][done?]compose
 
@@ -40,20 +51,20 @@ choi swap i inAt [] cons cons swap push
 [[done?][][do-move done? [possible?] dip || [][erase] if-else][] linrec
 [[drop] depth 2 - times] dip pop drop pop swap drop][mk-sequence] compose
 base mk-sequence [] cons
-[[base mk-sequence] dip cons] 19 times 
+[[base mk-sequence] dip cons] cols rows * 1 - times 
 [drop]dip
 [] cons
 cyan swap cons
 [base mk-sequence [] cons
-[[base mk-sequence] dip cons] 19 times 
+[[base mk-sequence] dip cons] cols rows * 1 - times 
 [drop]dip
 [] cons
 magenta swap cons]dip
 [base mk-sequence [] cons
-[[base mk-sequence] dip cons] 19 times 
+[[base mk-sequence] dip cons] cols rows * 1 - times 
 [drop]dip
 [] cons
-yellow swap cons]dip2
+"#fd0" swap cons]dip2
 `)
   const svgRef: RefObject<HTMLDivElement> | null = useRef(null);
 
@@ -72,14 +83,12 @@ yellow swap cons]dip2
     const svg = svgRef?.current?.innerHTML;
     if (svg) {
       const blob = new Blob([svg], { type: "image/svg+xml" });
-      downloadBlob(blob, `ymc_${columns}_${rows}_${points}-${count + 1}-of-50.svg`);
+      downloadBlob(blob, `ymc_${cols}_${rows}_${points}-${count + 1}-of-50.svg`);
     }
   }, []);
 
-  const startPt = [60, 55]
-  const points = 12
-  const columns = 5
-  const rows = 4
+  const startPt = [40, 100]
+  const points = 14
   const interp = interpreter(`${count+1} ${pounceCode}`);
 
   let result = interp.next();
@@ -90,10 +99,10 @@ yellow swap cons]dip2
   // console.log(unParse(value.stack))
   const mkAllPaths = (startPt: number[], stack: any[]) => {
     let allPaths = []
-    for (let x = 0; x < columns; x++) {
+    for (let x = 0; x < cols; x++) {
       for (let y = 0; y < rows; y++) {
         // console.log(translate(startPt, [x * 20, y * 20]))
-        allPaths.push([translate(startPt, [x * 100, y * 90]), stack[x * rows + y]])
+        allPaths.push([translate(startPt, [x * 180, y * 180]), stack[x * rows + y]])
       }
     }
     return allPaths;
@@ -118,7 +127,7 @@ yellow swap cons]dip2
       </svg>
     </div>
     <div>
-      <small style={{ paddingRight: 30 }}>{columns * rows} paths --  {count + 1} of 50</small>
+      <small style={{ paddingRight: 30 }}>{cols * rows} paths --  {count + 1} of 50</small>
 
       <button disabled={count <= 0} onClick={
         () => {
@@ -143,7 +152,7 @@ const translate = (a: number[], offset: number[]) => {
 
 
 const makeLoopyPathDString = (start: number[], curves: number[], i: number) => {
-  const diameter = 8
+  const diameter = 12
   const scaled_d = diameter * 2 / 3
   const mkPtStr = (pt: number[], scale: number): string => pt.map((n) => n * scale).join(" ")
   const makePtsString = (jump: number, top: boolean) => {
@@ -181,3 +190,26 @@ function downloadBlob(blob: Blob | MediaSource, filename: string) {
 
 export default App
 
+// # sort by magnitude then pick one of the first two
+// 94 seedrandom random drop
+// [5 3 1 -1 -3 -5 -7]
+// [size 1 <=] [] [uncons [abs [abs]dip >=] split] [concat] binrec
+// [size 1 >][random 0.5 + floor outAt][0 outAt] ifte
+// TBD pick the most centrus or random amoung abs =
+
+// # rm inside a loop
+// 462 seedrandom random drop
+// 1
+// [[13 11 9 7 5 3 1 ]
+// [11 9 7 5 3 1 -1][11 9 7 5 3 1 -1]
+// [9 7 5 3 1 -1 -3][9 7 5 3 1 -1 -3]
+// [7 5 3 1 -1 -3 -5][7 5 3 1 -1 -3 -5]
+// [5 3 1 -1 -3 -5 -7][5 3 1 -1 -3 -5 -7]
+// [3 1 -1 -3 -5 -7 -9][3 1 -1 -3 -5 -7 -9]
+// [1 -1 -3 -5 -7 -9 -11][1 -1 -3 -5 -7 -9 -11]
+// [-1 -3 -5 -7 -9 -11 -13]]
+// swap dup [swap] dip outAt size random * floor outAt [drop] dip 
+// #[uncons swap drop [] swap cons] dip
+// [ii poss jmp]
+// [ii jmp +  poss ii
+// [[pos i][pos i outAt [uncons swap drop] jmp times i inAt i 1 +]pounce] jmp times drop]pounce
