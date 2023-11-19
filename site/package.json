@@ -11,11 +11,16 @@
   },
   "dependencies": {
     "@pounce-lang/core": "github:pounce-lang/js-core",
+    "@xstate/react": "3.2.1",
+    "loader-utils": "3.2.1",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "react-router": "^6.19.0",
+    "react-router-dom": "5.2.0",
+    "xstate": "^4.37.1"
   },
   "devDependencies": {
-    "@types/react": "^18.0.37",
+    "@types/react": "^18.2.37",
     "@types/react-dom": "^18.0.11",
     "@typescript-eslint/eslint-plugin": "^5.59.0",
     "@typescript-eslint/parser": "^5.59.0",

@@ -1,16 +1,15 @@
-import { useState } from 'react'
+import * as React from 'react'
 import './App.css'
-import { OneOfFifty } from "./OneOfFifty"
-import { SimpleTry } from "./SimpleTry"
+import { BrowserRouter, Route } from "react-router-dom";
+import Routes from "./Routes";
 
 export function App() {
-  const [page, setPage] = useState("b")
-
-  return <div>
-  <button onClick={()=>setPage("a")}>a</button>
-  <button onClick={()=>setPage("b")}>b</button>
-  <hr />
-  {page === 'a' ? <OneOfFifty /> : <SimpleTry />}
-  </div>
+  return (
+  <div className="App">
+  <h1>penplotter svg</h1>
+  <BrowserRouter>
+    <Route path="/" component={Routes} />
+  </BrowserRouter>
+  </div>)
 }
 

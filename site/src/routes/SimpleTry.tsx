@@ -1,70 +1,26 @@
 import { RefObject, useCallback, useRef, useState } from 'react'
-import './App.css'
+import '../App.css'
 import { interpreter, unParse } from '@pounce-lang/core';
 
-// attempt at timesi
-// [dup 0 > [1 - [f n] [n f leap f n] pounce timesi] [drop drop] if-else] [timesi] compose
-// [3 - abs  3 - abs ] 7 timesi
-
-export function OneOfFifty() {
+export function SimpleTry() {
   const [count, setCount] = useState(0)
   const [cols, setCols] = useState(3)
    const [rows, setRows] = useState(2)
-  const [pounceCode, setPounceCode] = useState(`
- seedrandom random drop
- [${cols}][cols]compose
- [${rows}][rows]compose
- [] cons [height] compose
-[[0 [0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
-[[13 11 9 7 5 3 1 ]
-[11 9 7 5 3 1 -1][11 9 7 5 3 1 -1]
-[9 7 5 3 1 -1 -3][9 7 5 3 1 -1 -3]
-[7 5 3 1 -1 -3 -5][7 5 3 1 -1 -3 -5]
-[5 3 1 -1 -3 -5 -7][5 3 1 -1 -3 -5 -7]
-[3 1 -1 -3 -5 -7 -9][3 1 -1 -3 -5 -7 -9]
-[1 -1 -3 -5 -7 -9 -11][1 -1 -3 -5 -7 -9 -11]
-[-1 -3 -5 -7 -9 -11 -13]]
-]] [base] compose
-
-[
-  # pick one of two lowest 
-  [size 1 <=] [] [uncons [abs [abs]dip >=] split] [concat] binrec
-  [size 1 >][random 0.5 + floor outAt][0 outAt] ifte
-
-  swap [dup] dip swap [!=] cons filter][uncons-random-item] compose
-
-[[[i choi pos]] [[i choi pos] choi false [0 == ||] reduce ! i 0 == &&] pounce][done?]compose
-
-[[[i choi pos]] [[i choi pos] i choi swap outAt swap drop 0 ==] pounce]
-[possible?]compose
-
-[[[i choi pos]] [pop drop pos push] pounce]
-[erase]compose
-
-[[[i choi pos]] [[i choi pos] pos i outAt
-uncons-random-item swap i swap [inAt] dip
-i swap dup [+] dip
-choi swap i inAt [] cons cons swap push  
-] pounce]
-[do-move]compose
-
-[[done?][][do-move done? [possible?] dip || [][erase] if-else][] linrec
-[[drop] depth 2 - times] dip pop drop pop swap drop][mk-sequence] compose
-base mk-sequence [] cons
-[[base mk-sequence] dip cons] cols rows * 1 - times 
-[drop]dip
-[] cons
-cyan swap cons
-[base mk-sequence [] cons
-[[base mk-sequence] dip cons] cols rows * 1 - times 
-[drop]dip
-[] cons
-magenta swap cons]dip
-[base mk-sequence [] cons
-[[base mk-sequence] dip cons] cols rows * 1 - times 
-[drop]dip
-[] cons
-"#fd0" swap cons]dip2
+  const [pounceCode, setPounceCode] = useState(` drop
+#  [11 11 0 -3 -3 0 -3 -1 0 0 0 -7 -5]
+#  [13 13 0 -3 -3 0 -3 -1 0 0 0 0 0 -9 -7]
+#  [13 13 0 -3 -3 0 -3 0 0 -3 0 0 0 -9 -5]
+#  [13 0 0 13 0 -5 -3 0 -3 -1 0 0 0 -7 0 0 -7]
+#  [0 0 13 11 0 -3 -3 0 -3 -1 0 0 0 0 -5 -9]
+#  [0 0 9 9 0 -3 -3 0 -3 -1 0 -5 -3]
+[black [
+  [11 11 0 -3 -3 0 -3 -1 0 0 0 -7 -5]
+  [13 13 0 -3 -3 0 -3 -1 0 0 0 0 0 -9 -7]
+  [13 13 0 -3 -3 0 -3 0 0 -3 0 0 0 -9 -5]
+  [13 0 0 13 0 -5 -3 0 -3 -1 0 0 0 -7 0 0 -7]
+  [15 0 0 11 0 -5 -3 0 -3 -1 0 0 0 0 -5 -9]
+  [0 0 11 0 0 11 0 -5 -3 0 -3 -1 0 -5 0 0 -5]
+]]
 `)
   const svgRef: RefObject<HTMLDivElement> | null = useRef(null);
 
@@ -83,12 +39,11 @@ magenta swap cons]dip
     const svg = svgRef?.current?.innerHTML;
     if (svg) {
       const blob = new Blob([svg], { type: "image/svg+xml" });
-      downloadBlob(blob, `ymc_${cols}_${rows}_${points}-${count + 1}-of-50.svg`);
+      downloadBlob(blob, `dove_${cols}_${rows}_${count + 1}-of-50.svg`);
     }
   }, []);
 
   const startPt = [40, 100]
-  const points = 14
   const interp = interpreter(`${count+1} ${pounceCode}`);
 
   let result = interp.next();
@@ -157,6 +112,7 @@ const makeLoopyPathDString = (start: number[], curves: number[], i: number) => {
   const mkPtStr = (pt: number[], scale: number): string => pt.map((n) => n * scale).join(" ")
   const makePtsString = (jump: number, top: boolean) => {
     //console.log("jump", jump)
+    //top = !top
     let pta = [[0, scaled_d], [diameter, scaled_d], [diameter, 0]]
     if (top ? jump > 0 : jump < 0) {
       pta = pta.map(p => ([p[0], p[1] * -1]))
