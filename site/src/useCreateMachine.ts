@@ -4,7 +4,7 @@ import { createMachine } from "xstate";
 // machine states correspond to routes in the app (with the
 // exception of '_redirect_')
 const states = {
-  _redirect_: {
+  "_redirect_": {
     // this conditional logic serves as the root redirect on
     // start of the machine
     always: [
@@ -58,7 +58,7 @@ export const useCreateMachine = () => {
             // popstate events, refresh, navigation by url, redirects
             syncState: routes.map((path) => ({
               target: path,
-              cond: (_, e) => e.path === path
+              cond: (_, e: any) => (e.path === path)
             }))
           },
           states,
@@ -70,10 +70,10 @@ export const useCreateMachine = () => {
         },
         {
           guards: {
-            isNormalUser: (ctx) => ctx.isNormalUser,
-            isAltUser: (ctx) => ctx.isAltUser,
-            isOptionA: (_, e) => e.option === "a",
-            isOptionB: (_, e) => e.option === "b"
+            isNormalUser: (ctx: any) => ctx.isNormalUser,
+            isAltUser: (ctx: any) => ctx.isAltUser,
+            isOptionA: (_, e: any) => e.option === "a",
+            isOptionB: (_, e: any) => e.option === "b"
           }
         }
       ),

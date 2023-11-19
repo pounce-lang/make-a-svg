@@ -6,7 +6,7 @@ import { assign } from "xstate";
 import { useCreateMachine } from "./useCreateMachine";
 import { MachineContext } from "./MachineContext";
 
-export const MachineProvider = ({ children }) => {
+export const MachineProvider = ({ children }: {children:any}) => {
   const history = useHistory();
   const machine = useCreateMachine();
 

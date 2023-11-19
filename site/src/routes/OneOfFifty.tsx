@@ -8,8 +8,8 @@ import { interpreter, unParse } from '@pounce-lang/core';
 
 export function OneOfFifty() {
   const [count, setCount] = useState(0)
-  const [cols, setCols] = useState(3)
-   const [rows, setRows] = useState(2)
+  const [cols] = useState(3)
+   const [rows] = useState(2)
   const [pounceCode, setPounceCode] = useState(`
  seedrandom random drop
  [${cols}][cols]compose

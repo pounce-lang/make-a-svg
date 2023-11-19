@@ -1,4 +1,3 @@
-import * as React from "react";
 import { useMachine } from "../MachineContext";
 
 export const About = () => {

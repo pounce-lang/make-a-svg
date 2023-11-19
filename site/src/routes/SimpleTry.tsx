@@ -4,8 +4,8 @@ import { interpreter, unParse } from '@pounce-lang/core';
 
 export function SimpleTry() {
   const [count, setCount] = useState(0)
-  const [cols, setCols] = useState(3)
-   const [rows, setRows] = useState(2)
+  const [cols] = useState(3)
+   const [rows] = useState(2)
   const [pounceCode, setPounceCode] = useState(` drop
 #  [11 11 0 -3 -3 0 -3 -1 0 0 0 -7 -5]
 #  [13 13 0 -3 -3 0 -3 -1 0 0 0 0 0 -9 -7]
