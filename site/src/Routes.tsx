@@ -6,6 +6,7 @@ import { MachineProvider } from "./MachineProvider";
 import {
   OneOfFifty,
   SimpleTry,
+  Try2,
   About
 } from "./routes";
 
@@ -15,6 +16,7 @@ const Routes = () => {
       <Switch>
         <Route path="/oneof50"><OneOfFifty /></Route>
         <Route path="/simpletry" ><SimpleTry /></Route>
+        <Route path="/try2" ><Try2 /></Route>
         <Route path="/about" ><About /></Route>
         <Route
           path="/"

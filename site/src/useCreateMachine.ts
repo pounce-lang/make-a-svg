@@ -38,9 +38,11 @@ const states = {
     on: {
         aevent: "/oneof50",
         bevent: "/simpletry",
+        cevent: "/try2",
     }
   },
   "/simpletry": {},
+  "/try2": {},
   "/oneof50": {},
 };
 
